@@ -1,42 +1,37 @@
-# Usamos la imagen oficial de Node.js como base
-FROM node:20-alpine AS development
+# Etapa de desarrollo y construcción
+FROM node:20-alpine AS build
 
-# Establecemos el directorio de trabajo dentro del contenedor
 WORKDIR /usr/src/app
 
-# Copiamos el package.json y package-lock.json
+# Copiar package.json y package-lock.json
 COPY package*.json ./
 
-# Instalamos todas las dependencias (incluyendo devDependencies)
+# Instalar todas las dependencias, incluyendo las devDependencies
 RUN npm install
 
-# Copiamos el resto del código fuente
+# Copiar el código fuente
 COPY . .
 
-# Construimos la aplicación
+# Construir la aplicación
 RUN npm run build
 
-# Segunda etapa: para producción, necesitamos menos paquetes
+# Etapa de producción
 FROM node:20-alpine AS production
 
-# Definimos NODE_ENV
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-
-# Establecemos el directorio de trabajo
 WORKDIR /usr/src/app
 
-# Copiamos el package.json y package-lock.json
+# Copiar package.json y package-lock.json
 COPY package*.json ./
 
-# Instalamos solo las dependencias de producción
-RUN npm ci --only=production
+# Instalar solo las dependencias de producción
+RUN npm ci --omit=dev
 
-# Copiamos el código compilado desde la etapa de desarrollo
-COPY --from=development /usr/src/app/dist ./dist
+# Copiar el código compilado desde la etapa de build
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/node_modules/.bin ./node_modules/.bin
 
-# Exponemos el puerto que usa la aplicación
+# Exponer el puerto
 EXPOSE 3001
 
-# Comando para ejecutar la aplicación
+# Comando para iniciar la aplicación
 CMD ["node", "dist/main"]

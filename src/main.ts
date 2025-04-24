@@ -25,7 +25,7 @@ async function bootstrap() {
     .addTag('users', 'Gestión de usuarios')
     .addTag('products', 'Gestión de productos')
     .addTag('orders', 'Gestión de pedidos')
-    .addTag('grooming', 'Servicios de peluquería canina')
+    .addTag('turnos', 'citas de peluquería canina')
     .addBearerAuth()
     .build();
   

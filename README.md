@@ -1,99 +1,95 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+🐾 PetShop y Peluquería Canina API 🐾
+📋 Descripción
+API REST para una tienda online de productos para mascotas y servicios de peluquería canina. Desarrollada con NestJS, TypeScript y Supabase.
+✨ Características
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+🔐 Autenticación con JWT
+👤 Gestión de usuarios (cliente y administrador)
+🛍️ Catálogo de productos para mascotas
+🛒 Sistema de carrito de compras
+📅 Reserva de turnos para peluquería canina
+📊 Panel de administración
+📝 Documentación con Swagger
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+🚀 Tecnologías
 
-## Description
+⚡ NestJS + TypeScript
+🔒 JWT y Bcrypt para autenticación
+🗄️ Supabase (PostgreSQL)
+📚 Swagger para documentación de API
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+🛠️ Instalación:
+# Clonar el repositorio
+git clone https://github.com/tu-usuario/petshop-backend.git
 
-## Project setup
+# Entrar en la carpeta
+cd petshop-backend
 
-```bash
-$ npm install
-```
+# Instalar dependencias
+npm install
 
-## Compile and run the project
+# Configurar variables de entorno
+# Crea un archivo .env con las siguientes variables:
+# SUPABASE_URL=tu_url_supabase
+# SUPABASE_KEY=tu_key_supabase
+# JWT_SECRET=tu_jwt_secret
+# JWT_EXPIRATION=3600s
+# PORT=3001
 
-```bash
-# development
-$ npm run start
+# Ejecutar en desarrollo
+npm run start:dev
 
-# watch mode
-$ npm run start:dev
+# Ejecutar en producción
+npm run start
+🌐 Endpoints
+Autenticación
 
-# production mode
-$ npm run start:prod
-```
+POST /auth/register - Registro de usuarios
+POST /auth/login - Iniciar sesión
 
-## Run tests
+Usuarios
 
-```bash
-# unit tests
-$ npm run test
+GET /users/profile - Obtener perfil
+PUT /users/profile - Actualizar perfil
 
-# e2e tests
-$ npm run test:e2e
+Productos
 
-# test coverage
-$ npm run test:cov
-```
+GET /products - Listar todos los productos
+GET /products/:id - Obtener producto por ID
+GET /products/category/:category - Filtrar por categoría
+POST /products - Crear producto (admin)
+PUT /products/:id - Actualizar producto (admin)
+DELETE /products/:id - Eliminar producto (admin)
 
-## Deployment
+Pedidos
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+POST /orders - Crear pedido
+GET /orders/my-orders - Mis pedidos
+GET /orders/:id - Detalles de un pedido
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Turnos para Peluquería
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+POST /turnos/appointment - Agendar turno
+GET /turnos/appointments/:userId - Obtener turnos por usuario
+GET /turnos/available-slots/:date - Obtener horarios disponibles
+PUT /turnos/:id - Modificar turno
+DELETE /turnos/:id - Cancelar turno
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+📋 Reglas de negocio
 
-## Resources
+Los turnos de peluquería se pueden agendar de lunes a viernes entre las 8:00 y 18:00 horas
+Cada turno tiene una duración de 1:30 horas
+Solo se puede reservar un turno por hora y media
+Los perros se clasifican por tamaño: pequeño, mediano, grande
+Servicios disponibles: baño, baño y corte
 
-Check out a few resources that may come in handy when working with NestJS:
+📚 Documentación
+Una vez iniciado el servidor, puedes acceder a la documentación de Swagger en:
+http://localhost:3001/api
+📝 Licencia
+Este proyecto está bajo la Licencia MIT - consulta el archivo LICENSE para más detalles.
+👨‍💻 Autor
+Desarrollado por Agata
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-# Pelu-PetShop
+¡Gracias por usar nuestra API! Si tienes alguna pregunta o sugerencia, no dudes en abrir un issue o contactarnos.

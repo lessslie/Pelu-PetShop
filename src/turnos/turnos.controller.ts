@@ -57,7 +57,7 @@ async getAvailableTimeSlots(@Param('date') date: string): Promise<string[]> {
         date: '2023-01-01',
         time: '08:00',
         dogSize: 'small',
-        serviceType: 'bath'
+        serviceType: 'baño y corte'
       },
       {
         id: '2',
@@ -66,7 +66,7 @@ async getAvailableTimeSlots(@Param('date') date: string): Promise<string[]> {
         date: '2023-01-01',
         time: '08:30',
         dogSize: 'medium',
-        serviceType: 'grooming'
+        serviceType: 'baño'
       }
     ]
   })
