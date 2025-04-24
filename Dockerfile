@@ -28,7 +28,6 @@ RUN npm ci --omit=dev
 
 # Copiar el código compilado desde la etapa de build
 COPY --from=build /usr/src/app/dist ./dist
-COPY --from=build /usr/src/app/node_modules/.bin ./node_modules/.bin
 
 # Exponer el puerto
 EXPOSE 3001
