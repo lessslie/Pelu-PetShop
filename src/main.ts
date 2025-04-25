@@ -15,7 +15,12 @@ async function bootstrap() {
   
   // Habilitar CORS
   app.enableCors({
-    origin: ['https://petshop-frontend-eight.vercel.app','http://localhost:3000'],
+    origin: [
+      'https://petshop-frontend-eight.vercel.app',
+      'http://localhost:3000',
+      // Permite todos los subdominios de tu proyecto en Vercel:
+      /^https:\/\/petshop-frontend-[^.]+\.vercel\.app$/
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type,Authorization',
     exposedHeaders: 'Content-Type,Authorization',
