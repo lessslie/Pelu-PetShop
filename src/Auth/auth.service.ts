@@ -5,6 +5,8 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { CustomJwtPayload } from './interfaces/jwt-payload.interface';
+import { User } from '@supabase/supabase-js';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -12,7 +14,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(registerDto: RegisterDto): Promise<{ token: string }> {
+  async register(registerDto: RegisterDto): Promise<{ access_token: string , userId: string, email: string, role: string, firstName: string, lastName: string, phone: string, petName: string}> {
     const { email, password, firstName, lastName, phone, petName } = registerDto;
 
     // Verificar si el usuario ya existe
@@ -36,17 +38,17 @@ export class AuthService {
       .insert({
         email,
         password: hashedPassword,
-        first_name: firstName,
-        last_name: lastName,
+        firstName,
+        lastName,
         phone,
-        pet_name: petName,
+        petName,
         role: 'client', // Por defecto, todos son clientes
       })
       .select()
       .single();
 
     if (error) {
-      throw new Error(`Error al crear usuario: ${error.message}`);
+      throw new ConflictException(`Error al crear usuario: ${error.message}`);
     }
 
     // Generar token JWT
@@ -58,10 +60,10 @@ export class AuthService {
     
     const token = this.jwtService.sign(payload);
 
-    return { token };
+    return { access_token: token , userId: newUser.id, email: newUser.email, role: newUser.role, firstName: newUser.firstName, lastName: newUser.lastName, phone: newUser.phone, petName: newUser.petName};
   }
 
-  async login(loginDto: LoginDto): Promise<{ token: string }> {
+  async login(loginDto: LoginDto): Promise<{ access_token: string }> {
     const { email, password } = loginDto;
 
     // Buscar usuario por email
@@ -90,10 +92,10 @@ export class AuthService {
     
     const token = this.jwtService.sign(payload);
 
-    return { token };
+    return { access_token: token };
   }
 
-  async validateUser(payload: CustomJwtPayload): Promise<any> {
+  async validateUser(payload: CustomJwtPayload): Promise<User> {
     const { data: user } = await this.supabaseClient
       .from('users')
       .select('*')

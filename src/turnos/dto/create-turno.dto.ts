@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsString, IsUUID, IsDateString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString, IsUUID, IsDateString, IsIn } from 'class-validator';
 
 export enum DogSize {
-  SMALL = 'pequeño',
-  MEDIUM = 'mediano',
-  LARGE = 'grande',
+  SMALL = 'small',
+  MEDIUM = 'medium',
+  LARGE = 'large',
 }
 
 export enum ServiceType {
-  BATH = 'baño',
-  BATH_AND_CUT = 'baño y corte',
+  BATH = 'bath',
+  BATH_AND_CUT = 'bath and cut',
 }
 
 export class CreateTurnoDto {
@@ -31,11 +31,12 @@ export class CreateTurnoDto {
   @IsNotEmpty()
   time: string;
 
-  @ApiProperty({ description: 'Tamaño del perro' }) 
+  @ApiProperty({ description: 'Tamaño del perro', enum: DogSize }) 
   @IsEnum(DogSize)
+  @IsIn(['small', 'medium', 'large'])
   dogSize: DogSize;
 
-  @ApiProperty({ description: 'Tipo de servicio' })
+  @ApiProperty({ description: 'Tipo de servicio', enum: ServiceType })
   @IsEnum(ServiceType)
   serviceType: ServiceType;
 }

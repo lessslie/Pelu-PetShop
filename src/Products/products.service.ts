@@ -1,8 +1,7 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto, ProductCategory } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-
 
 @Injectable()
 export class ProductsService {
@@ -84,7 +83,7 @@ export class ProductsService {
     return { message: 'Producto eliminado correctamente' };
   }
 
-  async findByCategory(category: string) {
+  async findByCategory(category: ProductCategory) {
     const { data, error } = await this.supabaseClient
       .from('products')
       .select('*')

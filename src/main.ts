@@ -14,7 +14,13 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   
   // Habilitar CORS
-  app.enableCors();
+  app.enableCors({
+    origin: ['https://petshop-frontend-eight.vercel.app','http://localhost:3000'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type,Authorization',
+    exposedHeaders: 'Content-Type,Authorization',
+    credentials: true,
+  });
   
   // Configuración de Swagger
   const config = new DocumentBuilder()
@@ -26,6 +32,7 @@ async function bootstrap() {
     .addTag('products', 'Gestión de productos')
     .addTag('orders', 'Gestión de pedidos')
     .addTag('turnos', 'citas de peluquería canina')
+    .addTag('payment', 'Pagos con Mercado Pago')
     .addBearerAuth()
     .build();
   

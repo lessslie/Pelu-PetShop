@@ -32,11 +32,10 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
-  @Get('category/:category')
+  @Get('categoria/:category')
   @ApiOperation({ summary: 'Obtener productos por categoría' })
-  @ApiParam({ name: 'category', enum: ProductCategory })
-  @ApiResponse({ status: 200, description: 'Lista de productos filtrada por categoría' })
-  findByCategory(@Param('category') category: string) {
+  @ApiParam({ name: 'category', enum: ProductCategory, description: 'Categoría del producto' })
+  findByCategory(@Param('category') category: ProductCategory) {
     return this.productsService.findByCategory(category);
   }
 

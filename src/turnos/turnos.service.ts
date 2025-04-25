@@ -2,6 +2,7 @@ import { Injectable, Inject, NotFoundException, BadRequestException } from '@nes
 import { SupabaseClient } from '@supabase/supabase-js';
 import { CreateTurnoDto, DogSize, ServiceType } from './dto/create-turno.dto';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
+import { MailService } from '../Mails/mail.service';
 
 export interface Turno {
   id: string;
@@ -17,6 +18,7 @@ export interface Turno {
 export class TurnosService {
   constructor(
     @Inject('SUPABASE_CLIENT') private supabaseClient: SupabaseClient,
+    private mailService: MailService,
   ) {}
 
   async createTurno(dto: CreateTurnoDto): Promise<Turno> {
@@ -77,6 +79,7 @@ export class TurnosService {
     }
     
     // Si pasó todas las validaciones, crear el turno
+    // Convertir dog_size y service_type a mayúsculas para cumplir con la restricción de la base de datos
     const { data, error } = await this.supabaseClient
       .from('turnos')
       .insert({
@@ -84,8 +87,8 @@ export class TurnosService {
         dog_name: dto.dogName,
         date: dto.date,
         time: dto.time,
-        dog_size: dto.dogSize,
-        service_type: dto.serviceType
+        dog_size: dto.dogSize.toUpperCase(), // Convertir a mayúsculas
+        service_type: dto.serviceType === 'bath' ? 'BATH' : 'BATH_AND_CUT' // Convertir a mayúsculas
       })
       .select()
       .single();
@@ -93,6 +96,31 @@ export class TurnosService {
     if (error) {
       console.error('Error al crear turno:', error);
       throw new Error(`Error al crear turno: ${error.message}`);
+    }
+
+    // Obtener información del usuario para el correo
+    const { data: userData, error: userError } = await this.supabaseClient
+      .from('users')
+      .select('email, "firstName", "lastName"')
+      .eq('id', dto.userId)
+      .single();
+
+    if (!userError && userData) {
+      try {
+        // Enviar correo de confirmación
+        await this.mailService.sendAppointmentConfirmation(
+          userData.email,
+          `${userData.firstName} ${userData.lastName}`,
+          dto.dogName,
+          dto.date,
+          dto.time,
+          dto.dogSize,
+          dto.serviceType
+        );
+      } catch (emailError) {
+        console.error('Error al enviar correo de confirmación:', emailError);
+        // No interrumpimos el flujo si falla el envío del correo
+      }
     }
     
     // Convertir el resultado de snake_case a camelCase
@@ -102,8 +130,9 @@ export class TurnosService {
       dogName: data.dog_name,
       date: data.date,
       time: data.time,
-      dogSize: data.dog_size,
-      serviceType: data.service_type
+      dogSize: data.dog_size.toLowerCase() as DogSize, // Convertir a minúsculas para la respuesta
+      
+      serviceType: data.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT
     };
   }
 
@@ -125,8 +154,8 @@ export class TurnosService {
       dogName: turno.dog_name,
       date: turno.date,
       time: turno.time,
-      dogSize: turno.dog_size,
-      serviceType: turno.service_type
+      dogSize: turno.dog_size.toLowerCase() as DogSize, // Convertir a minúsculas
+      serviceType: turno.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT // Convertir a minúsculas
     }));
   }
 
@@ -144,8 +173,8 @@ export class TurnosService {
       dogName: turno.dog_name,
       date: turno.date,
       time: turno.time,
-      dogSize: turno.dog_size,
-      serviceType: turno.service_type
+      dogSize: turno.dog_size.toLowerCase() as DogSize, // Convertir a minúsculas
+      serviceType: turno.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT // Convertir a minúsculas
     }));
   }
 
@@ -167,8 +196,8 @@ export class TurnosService {
     if (dto.dogName) updateData.dog_name = dto.dogName;
     if (dto.date) updateData.date = dto.date;
     if (dto.time) updateData.time = dto.time;
-    if (dto.dogSize) updateData.dog_size = dto.dogSize;
-    if (dto.serviceType) updateData.service_type = dto.serviceType;
+    if (dto.dogSize) updateData.dog_size = dto.dogSize.toUpperCase(); // Convertir a mayúsculas
+    if (dto.serviceType) updateData.service_type = dto.serviceType === 'bath' ? 'BATH' : 'BATH_AND_CUT'; // Convertir a mayúsculas
     
     // Actualizar el turno
     const { data, error } = await this.supabaseClient
@@ -190,8 +219,8 @@ export class TurnosService {
       dogName: data.dog_name,
       date: data.date,
       time: data.time,
-      dogSize: data.dog_size,
-      serviceType: data.service_type
+      dogSize: data.dog_size.toLowerCase() as DogSize, // Convertir a minúsculas
+      serviceType: data.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT 
     };
   }
 
@@ -230,7 +259,8 @@ async getAvailableTimeSlots(date: string): Promise<string[]> {
     return []; // No hay horarios disponibles en fin de semana
   }
   
-  // Generar todos los slots posibles (cada 30 minutos desde 8:00 hasta 18:00)
+  // Generar todos los slots posibles (cada 1:30 horas desde 8:00 hasta 18:00)
+
   const allSlots: string[] = [];
   for (let hour = 8; hour <= 17; hour++) {
     allSlots.push(`${hour.toString().padStart(2, '0')}:00`);

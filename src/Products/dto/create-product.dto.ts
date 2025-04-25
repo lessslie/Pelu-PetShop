@@ -2,14 +2,14 @@ import { IsNotEmpty, IsNumber, IsString, IsEnum, Min, IsUrl, IsOptional, IsArray
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum ProductCategory {
-  DOG_FOOD = 'dog_food',
-  CAT_FOOD = 'cat_food',
-  DOG_ACCESSORIES = 'dog_accessories',
-  CAT_ACCESSORIES = 'cat_accessories',
-  DOG_TOYS = 'dog_toys',
-  CAT_TOYS = 'cat_toys',
-  DOG_CLOTHES = 'dog_clothes',
-  CAT_CLOTHES = 'cat_clothes',
+  ALIMENTO_PERRO = 'alimento_perro',
+  ALIMENTO_GATO = 'alimento_gato',
+  ACCESORIOS_PERRO = 'accesorios_perro',
+  ACCESORIOS_GATO = 'accesorios_gato',
+  JUGUETES_PERRO = 'juguetes_perro',
+  JUGUETES_GATO = 'juguetes_gato',
+  ROPA_PERRO = 'ropa_perro',
+  ROPA_GATO = 'ropa_gato',
 }
 
 export class CreateProductDto {
@@ -35,7 +35,7 @@ export class CreateProductDto {
 
   @ApiProperty({ 
     enum: ProductCategory, 
-    example: ProductCategory.DOG_FOOD, 
+    example: ProductCategory.ALIMENTO_PERRO, 
     description: 'Categoría del producto' 
   })
   @IsEnum(ProductCategory)

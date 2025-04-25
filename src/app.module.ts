@@ -7,6 +7,8 @@ import { UsersModule } from './Users/users.module';
 import { ProductsModule } from './Products/products.module';
 import { OrdersModule } from './Orders/orders.module';
 import { TurnosModule } from './turnos/turnos.module';
+import { MailModule } from './Mails/mail.module';
+import { PaymentModule } from './Pagos/payment.module';
 
 @Module({
   imports: [
@@ -18,6 +20,9 @@ import { TurnosModule } from './turnos/turnos.module';
     ProductsModule,
     OrdersModule,
     TurnosModule,
+    MailModule,
+    PaymentModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],
