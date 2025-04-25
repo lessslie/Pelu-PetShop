@@ -15,18 +15,13 @@ async function bootstrap() {
   
   // Habilitar CORS
   app.enableCors({
-    origin: [
-      'https://petshop-frontend-eight.vercel.app',
-      'http://localhost:3000',
-      // Permite todos los subdominios de tu proyecto en Vercel:
-      /^https:\/\/petshop-frontend-[^.]+\.vercel\.app$/
-    ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type,Authorization',
-    exposedHeaders: 'Content-Type,Authorization',
+    origin: '*',  // Temporalmente permite todas las conexiones
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Origin,X-Requested-With,Content-Type,Accept,Authorization,Access-Control-Allow-Origin',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
     credentials: true,
   });
-  
   // Configuración de Swagger
   const config = new DocumentBuilder()
     .setTitle('PetShop API')
