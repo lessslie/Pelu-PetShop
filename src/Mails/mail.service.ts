@@ -86,7 +86,7 @@ export class MailService {
           </div>
           <p>Para confirmar tu reserva, debes realizar el pago. Puedes hacerlo a través del siguiente enlace:</p>
           <div style="text-align: center; margin: 25px 0;">
-            <Link href="${this.configService.get('FRONTEND_URL')}/payment/checkout/${dogName}" style="background-color: #4caf50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">Realizar Pago</a>
+            <a href="${this.configService.get('FRONTEND_URL')}/payment/checkout/${dogName}" style="background-color: #4caf50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">Realizar Pago</a>
           </div>
           <p>Por favor, llega 10 minutos antes de tu cita. Si necesitas cancelar o reprogramar, háznoslo saber con al menos 24 horas de anticipación.</p>
           <p>¡Esperamos verte pronto!</p>
