@@ -12,6 +12,8 @@ export interface Turno {
   time: string;
   dogSize: DogSize;
   serviceType: ServiceType;
+  userName: string;
+  email: string;
 }
 
 @Injectable()
@@ -130,6 +132,8 @@ export class TurnosService {
       dogName: data.dog_name,
       date: data.date,
       time: data.time,
+      userName: data.user_name,
+      email: data.email,
       dogSize: data.dog_size.toLowerCase() as DogSize, // Convertir a minúsculas para la respuesta
       
       serviceType: data.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT
@@ -152,6 +156,8 @@ export class TurnosService {
       id: turno.id,
       userId: turno.user_id,
       dogName: turno.dog_name,
+      userName: turno.user_name,
+      email: turno.email,
       date: turno.date,
       time: turno.time,
       dogSize: turno.dog_size.toLowerCase() as DogSize, // Convertir a minúsculas
@@ -162,19 +168,24 @@ export class TurnosService {
   async getAllTurnos(): Promise<Turno[]> {
     const { data, error } = await this.supabaseClient
       .from('turnos')
-      .select('*');
+      .select('*, user:user_id ("firstName", "lastName", email)')
     if (error) {
       console.error('Error al obtener todos los turnos:', error);
       throw new Error(`Error al obtener turnos: ${error.message}`);
     }
+  
     return data.map(turno => ({
       id: turno.id,
       userId: turno.user_id,
+      userName: turno.user
+        ? `${turno.user.firstName || ''} ${turno.user.lastName || ''}`.trim()
+        : 'Sin nombre',
+      email: turno.user?.email || '',
       dogName: turno.dog_name,
       date: turno.date,
       time: turno.time,
-      dogSize: turno.dog_size.toLowerCase() as DogSize, // Convertir a minúsculas
-      serviceType: turno.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT // Convertir a minúsculas
+      dogSize: turno.dog_size.toLowerCase() as DogSize,
+      serviceType: turno.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT
     }));
   }
 
@@ -211,17 +222,37 @@ export class TurnosService {
       console.error('Error al actualizar turno:', error);
       throw new Error(`Error al actualizar turno: ${error.message}`);
     }
-    
-    // Convertir el resultado de snake_case a camelCase
-    return {
-      id: data.id,
-      userId: data.user_id,
-      dogName: data.dog_name,
-      date: data.date,
-      time: data.time,
-      dogSize: data.dog_size.toLowerCase() as DogSize, // Convertir a minúsculas
-      serviceType: data.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT 
+
+    // Reconstruir el objeto actualizado con los datos correctos (incluyendo JOIN a users)
+    // Hacemos un nuevo SELECT con JOIN para obtener email y nombre actualizado
+    const { data: turnoJoin, error: errorJoin } = await this.supabaseClient
+      .from('turnos')
+      .select('*, user:user_id ("firstName", "lastName", email)')
+      .eq('id', id)
+      .single();
+
+    if (errorJoin) {
+      throw new Error('No se pudo obtener los datos del cliente para el turno actualizado');
+    }
+
+    const turnoActualizado = {
+      id: turnoJoin.id,
+      userId: turnoJoin.user_id,
+      userName: turnoJoin.user
+        ? `${turnoJoin.user.firstName || ''} ${turnoJoin.user.lastName || ''}`.trim()
+        : 'Sin nombre',
+      email: turnoJoin.user?.email || '',
+      dogName: turnoJoin.dog_name,
+      date: turnoJoin.date,
+      time: turnoJoin.time,
+      dogSize: turnoJoin.dog_size.toLowerCase() as DogSize,
+      serviceType: turnoJoin.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT
     };
+
+    // Enviar email al cliente
+    await this.mailService.sendTurnoEditadoEmail(turnoActualizado.email, turnoActualizado);
+
+    return turnoActualizado;
   }
 
   async deleteTurno(id: string): Promise<boolean> {

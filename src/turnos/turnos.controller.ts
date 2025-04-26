@@ -2,7 +2,8 @@ import { Body, Controller, Get, Param, Post, Put, Delete } from '@nestjs/common'
 import { TurnosService, Turno } from './turnos.service';
 import { CreateTurnoDto } from './dto/create-turno.dto';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiResponse } from '@nestjs/swagger';
+import { TurnoResponseDto } from './dto/turno-response.dto';
 
 @Controller('turnos')
 export class TurnosController {
@@ -28,12 +29,19 @@ export class TurnosController {
   }
 
 
+  // @Get()
+  // @ApiProperty({
+  //   description: 'mostrar todos los turnos',
+  //   })
+  // async getAllTurnos(): Promise<Turno[]> {
+  //   return this.turnosService.getAllTurnos();
+  // }
+
   @Get()
-  @ApiProperty({
-    description: 'mostrar todos los turnos',
-    })
-  async getAllTurnos(): Promise<Turno[]> {
-    return this.turnosService.getAllTurnos();
+  async getAll(): Promise<any[]> {
+    const turnos = await this.turnosService.getAllTurnos();
+    console.log('Turnos enviados al frontend:', turnos);
+    return turnos;
   }
 
 @Get('available-slots/:date')

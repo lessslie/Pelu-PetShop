@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { Turno } from 'src/turnos/turnos.service';
 
 @Injectable()
 export class MailService {
@@ -106,6 +107,23 @@ export class MailService {
       console.error('Error al enviar el correo:');
       throw new Error('Error al enviar el correo');
     }
+  }
+  async sendTurnoEditadoEmail(email: string, turno: Turno) {
+    await this.transporter.sendMail({
+      to: email,
+      subject: 'Tu turno fue modificado',
+      html: `
+        <p>¡Hola! Te informamos que tu turno fue modificado:</p>
+        <ul>
+          <li><b>Mascota:</b> ${turno.dogName}</li>
+          <li><b>Fecha:</b> ${turno.date}</li>
+          <li><b>Hora:</b> ${turno.time}</li>
+          <li><b>Tamaño:</b> ${turno.dogSize}</li>
+          <li><b>Servicio:</b> ${turno.serviceType}</li>
+        </ul>
+        <p>Si tienes dudas, contáctanos.</p>
+      `
+    });
   }
 
   async sendPaymentConfirmation(
