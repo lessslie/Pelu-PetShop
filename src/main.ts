@@ -17,8 +17,10 @@ async function bootstrap() {
   const allowedOrigins = [
     'https://petshop-frontend-eight.vercel.app',
     'http://localhost:3000',
-    // Si quieres permitir previews de Vercel:
-    /^https:\/\/petshop-frontend-[^.]+\.vercel\.app$/
+    // Permite cualquier preview de Vercel para tu proyecto
+    /^https:\/\/petshop-frontend-[^.]+\.vercel\.app$/,
+    // Permite cualquier subdominio generado por Vercel para tu proyecto
+    /^https:\/\/petshop-frontend-[^.]+-agatas-projects-[^.]+\.vercel\.app$/
   ];
   
   app.enableCors({
