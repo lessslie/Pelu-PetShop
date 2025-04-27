@@ -65,6 +65,6 @@ async function bootstrap() {
   const port = process.env.PORT || 3001;
   await app.listen(port);
   console.log(`La aplicación está corriendo en: ${await app.getUrl()}`);
-  console.log('La aplicación está corriendo en: http://localhost:3001/api');
+  console.log(`La aplicación está corriendo en: ${process.env.NEXT_PUBLIC_API_URL}/api`);
 }
 bootstrap();

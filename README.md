@@ -85,7 +85,7 @@ Servicios disponibles: baño, baño y corte
 
 📚 Documentación
 Una vez iniciado el servidor, puedes acceder a la documentación de Swagger en:
-http://localhost:3001/api
+${process.env.NEXT_PUBLIC_API_URL}/api
 📝 Licencia
 Este proyecto está bajo la Licencia MIT - consulta el archivo LICENSE para más detalles.
 👨‍💻 Autor

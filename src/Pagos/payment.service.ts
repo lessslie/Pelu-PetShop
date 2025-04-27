@@ -71,7 +71,7 @@ export class PaymentService {
 
     // LOG para depurar FRONTEND_URL y BACKEND_URL
     const frontendUrl = this.configService.get('FRONTEND_URL', 'http://localhost:3000');
-    const backendUrl = this.configService.get('BACKEND_URL', 'http://localhost:3001');
+    const backendUrl = this.configService.get('BACKEND_URL', `${process.env.NEXT_PUBLIC_API_URL}`);
     console.log('FRONTEND_URL:', frontendUrl);
     console.log('BACKEND_URL:', backendUrl);
     
