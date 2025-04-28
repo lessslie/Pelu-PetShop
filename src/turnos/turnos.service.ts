@@ -151,8 +151,10 @@ export class TurnosService {
       throw new Error(`Error al obtener turnos: ${error.message}`);
     }
     
-    // Convertir todos los resultados de snake_case a camelCase
-    return data.map(turno => ({
+    // CAMBIO: Si el usuario no tiene turnos, data puede ser null o undefined.
+    // Usamos (data ?? []) para que siempre sea un array vacío si no hay turnos.
+    // Así, el frontend nunca recibe null ni undefined, sino [] y puede mostrar un mensaje amigable.
+    return (data ?? []).map(turno => ({
       id: turno.id,
       userId: turno.user_id,
       dogName: turno.dog_name,
@@ -161,7 +163,7 @@ export class TurnosService {
       date: turno.date,
       time: turno.time,
       dogSize: turno.dog_size.toLowerCase() as DogSize, // Convertir a minúsculas
-      serviceType: turno.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT // Convertir a minúsculas
+      serviceType: turno.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT // Convertir a enum
     }));
   }
 
