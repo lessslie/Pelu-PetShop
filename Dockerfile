@@ -26,8 +26,11 @@ COPY package*.json ./
 # Instalar solo las dependencias de producción
 RUN npm ci --omit=dev
 
-# Copiar el código compilado desde la etapa de build
+# Copia el código compilado
 COPY --from=build /usr/src/app/dist ./dist
+
+# Copia el archivo servicios.json a la misma ruta que espera el backend
+COPY src/servicios/servicios.json ./src/servicios/servicios.json
 
 # Exponer el puerto
 EXPOSE 3001
