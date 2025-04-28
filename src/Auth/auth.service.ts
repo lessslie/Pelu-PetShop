@@ -63,12 +63,12 @@ export class AuthService {
     return { access_token: token , userId: newUser.id, email: newUser.email, role: newUser.role, firstName: newUser.firstName, lastName: newUser.lastName, phone: newUser.phone, petName: newUser.petName};
   }
 
-  async login(loginDto: LoginDto): Promise<{ access_token: string }> {
+  async login(loginDto: LoginDto): Promise<{ access_token: string , userId: string, email: string, role: string, firstName: string, lastName: string, phone: string, petName: string}> {
     const { email, password } = loginDto;
 
     // Buscar usuario por email
-    const { data: user, error } = await this.supabaseClient
-      .from('users')
+  const { data: user, error } = await this.supabaseClient
+    .from('users')
       .select('*')
       .eq('email', email)
       .single();
@@ -92,7 +92,7 @@ export class AuthService {
     
     const token = this.jwtService.sign(payload);
 
-    return { access_token: token };
+    return { access_token: token, userId: user.id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName, phone: user.phone, petName: user.petName };
   }
 
   async validateUser(payload: CustomJwtPayload): Promise<User> {

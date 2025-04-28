@@ -9,7 +9,8 @@ import { OrdersModule } from './Orders/orders.module';
 import { TurnosModule } from './turnos/turnos.module';
 import { MailModule } from './Mails/mail.module';
 import { PaymentModule } from './Pagos/payment.module';
-import { ServiciosController } from './servicios.controller';
+import { ServiciosController } from './servicios/servicios.controller';
+import { ServiciosModule } from './servicios/servicios.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ServiciosController } from './servicios.controller';
     OrdersModule,
     TurnosModule,
     MailModule,
+    ServiciosModule,
     PaymentModule,
 
   ],
