@@ -3,6 +3,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { CreateTurnoDto, DogSize, ServiceType } from './dto/create-turno.dto';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
 import { MailService } from '../Mails/mail.service';
+import { PaymentService } from '../Pagos/payment.service'; // Importar PaymentService correctamente
 
 export interface Turno {
   id: string;
@@ -14,6 +15,7 @@ export interface Turno {
   serviceType: ServiceType;
   userName: string;
   email: string;
+  price: number; // Agregado para soportar el campo price
 }
 
 @Injectable()
@@ -21,6 +23,8 @@ export class TurnosService {
   constructor(
     @Inject('SUPABASE_CLIENT') private supabaseClient: SupabaseClient,
     private mailService: MailService,
+    private paymentService: PaymentService,
+  
   ) {}
 
   async createTurno(dto: CreateTurnoDto): Promise<Turno> {
@@ -89,6 +93,7 @@ export class TurnosService {
         dog_name: dto.dogName,
         date: dto.date,
         time: dto.time,
+        price: dto.price,
         dog_size: dto.dogSize.toUpperCase(), // Convertir a mayúsculas
         service_type: dto.serviceType === 'bath' ? 'BATH' : 'BATH_AND_CUT' // Convertir a mayúsculas
       })
@@ -117,7 +122,8 @@ export class TurnosService {
           dto.date,
           dto.time,
           dto.dogSize,
-          dto.serviceType
+          dto.serviceType,
+          dto.price
         );
       } catch (emailError) {
         console.error('Error al enviar correo de confirmación:', emailError);
@@ -134,6 +140,7 @@ export class TurnosService {
       time: data.time,
       userName: data.user_name,
       email: data.email,
+      price: data.price,
       dogSize: data.dog_size.toLowerCase() as DogSize, // Convertir a minúsculas para la respuesta
       
       serviceType: data.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT
@@ -162,8 +169,10 @@ export class TurnosService {
       email: turno.email,
       date: turno.date,
       time: turno.time,
+      price: turno.price,
       dogSize: turno.dog_size.toLowerCase() as DogSize, // Convertir a minúsculas
       serviceType: turno.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT // Convertir a enum
+
     }));
   }
 
@@ -175,20 +184,31 @@ export class TurnosService {
       console.error('Error al obtener todos los turnos:', error);
       throw new Error(`Error al obtener turnos: ${error.message}`);
     }
-  
-    return data.map(turno => ({
-      id: turno.id,
-      userId: turno.user_id,
-      userName: turno.user
-        ? `${turno.user.firstName || ''} ${turno.user.lastName || ''}`.trim()
-        : 'Sin nombre',
-      email: turno.user?.email || '',
-      dogName: turno.dog_name,
-      date: turno.date,
-      time: turno.time,
-      dogSize: turno.dog_size.toLowerCase() as DogSize,
-      serviceType: turno.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT
-    }));
+
+    return data.map(turno => {
+      let price = turno.price;
+      if (price == null) {
+        // Si no hay precio guardado, calcularlo dinámicamente
+        price = this.paymentService.calculatePrice(
+          turno.dog_size.toLowerCase(),
+          turno.service_type === 'BATH' ? 'bath' : 'bath and cut'
+        );
+      }
+      return {
+        id: turno.id,
+        userId: turno.user_id,
+        userName: turno.user
+          ? `${turno.user.firstName || ''} ${turno.user.lastName || ''}`.trim()
+          : 'Sin nombre',
+        email: turno.user?.email || '',
+        dogName: turno.dog_name,
+        date: turno.date,
+        time: turno.time,
+        price,
+        dogSize: turno.dog_size.toLowerCase() as DogSize,
+        serviceType: turno.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT
+      };
+    });
   }
 
   async updateTurno(id: string, dto: UpdateTurnoDto): Promise<Turno | null> {
@@ -209,6 +229,7 @@ export class TurnosService {
     if (dto.dogName) updateData.dog_name = dto.dogName;
     if (dto.date) updateData.date = dto.date;
     if (dto.time) updateData.time = dto.time;
+    if (dto.price) updateData.price = dto.price;
     if (dto.dogSize) updateData.dog_size = dto.dogSize.toUpperCase(); // Convertir a mayúsculas
     if (dto.serviceType) updateData.service_type = dto.serviceType === 'bath' ? 'BATH' : 'BATH_AND_CUT'; // Convertir a mayúsculas
     
@@ -247,6 +268,7 @@ export class TurnosService {
       dogName: turnoJoin.dog_name,
       date: turnoJoin.date,
       time: turnoJoin.time,
+      price: turnoJoin.price,
       dogSize: turnoJoin.dog_size.toLowerCase() as DogSize,
       serviceType: turnoJoin.service_type === 'BATH' ? ServiceType.BATH : ServiceType.BATH_AND_CUT
     };

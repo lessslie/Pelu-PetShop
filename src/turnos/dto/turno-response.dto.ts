@@ -9,4 +9,5 @@ export class TurnoResponseDto {
     time: string;
     dogSize: string;
     serviceType: string;
+    price: number;
   }

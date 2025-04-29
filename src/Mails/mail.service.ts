@@ -28,36 +28,8 @@ export class MailService {
     time: string,
     dogSize: string,
     serviceType: string,
+    price: number,
   ): Promise<void> {
-    // Calcular el precio basado en el tamaño del perro y tipo de servicio
-    let price = 0;
-    
-    if (serviceType.toLowerCase() === 'bath') {
-      switch (dogSize.toLowerCase()) {
-        case 'small':
-          price = 2500;
-          break;
-        case 'medium':
-          price = 3000;
-          break;
-        case 'large':
-          price = 3500;
-          break;
-      }
-    } else if (serviceType.toLowerCase() === 'bath and cut') {
-      switch (dogSize.toLowerCase()) {
-        case 'small':
-          price = 3500;
-          break;
-        case 'medium':
-          price = 4000;
-          break;
-        case 'large':
-          price = 4500;
-          break;
-      }
-    }
-
     // Formatear la fecha
     const formattedDate = new Date(date).toLocaleDateString('es-ES', {
       weekday: 'long',
@@ -66,7 +38,6 @@ export class MailService {
       day: 'numeric',
     });
 
-    // Crear el contenido del correo
     const mailOptions = {
       from: `"Pet Shop" <${this.configService.get('MAIL_FROM')}>`,
       to,
@@ -108,6 +79,7 @@ export class MailService {
       throw new Error('Error al enviar el correo');
     }
   }
+
   async sendTurnoEditadoEmail(email: string, turno: Turno) {
     await this.transporter.sendMail({
       to: email,
@@ -135,36 +107,8 @@ export class MailService {
     dogSize: string,
     serviceType: string,
     paymentId: string,
+    price: number,
   ): Promise<void> {
-    // Calcular el precio basado en el tamaño del perro y tipo de servicio
-    let price = 0;
-    
-    if (serviceType.toLowerCase() === 'bath') {
-      switch (dogSize.toLowerCase()) {
-        case 'small':
-          price = 2500;
-          break;
-        case 'medium':
-          price = 3000;
-          break;
-        case 'large':
-          price = 3500;
-          break;
-      }
-    } else if (serviceType.toLowerCase() === 'bath and cut') {
-      switch (dogSize.toLowerCase()) {
-        case 'small':
-          price = 3500;
-          break;
-        case 'medium':
-          price = 4000;
-          break;
-        case 'large':
-          price = 4500;
-          break;
-      }
-    }
-
     // Formatear la fecha
     const formattedDate = new Date(date).toLocaleDateString('es-ES', {
       weekday: 'long',
@@ -173,7 +117,6 @@ export class MailService {
       day: 'numeric',
     });
 
-    // Crear el contenido del correo
     const mailOptions = {
       from: `"Pet Shop" <${this.configService.get('MAIL_FROM')}>`,
       to,
@@ -183,7 +126,6 @@ export class MailService {
           <h2 style="color: #3f51b5; text-align: center;">¡Pago Confirmado!</h2>
           <p>Hola ${userName},</p>
           <p>Hemos recibido tu pago y tu turno para ${dogName} está completamente confirmado. ¡Gracias por tu confianza!</p>
-          
           <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
             <h3 style="margin-top: 0; color: #3f51b5;">Detalles de la reserva:</h3>
             <p><strong>Fecha:</strong> ${formattedDate}</p>
@@ -194,16 +136,13 @@ export class MailService {
             <p><strong>Precio pagado:</strong> $${price}</p>
             <p><strong>ID de pago:</strong> ${paymentId}</p>
           </div>
-          
           <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #4caf50;">
             <h3 style="margin-top: 0; color: #2e7d32;">Información importante:</h3>
             <p>Tu turno ya está confirmado y no se requiere ninguna acción adicional.</p>
             <p>Por favor, llega 10 minutos antes de tu cita.</p>
             <p>Si necesitas cancelar o reprogramar, háznoslo saber con al menos 24 horas de anticipación para gestionar el reembolso.</p>
           </div>
-          
           <p>¡Esperamos verte pronto!</p>
-          
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
             <p style="color: #757575; font-size: 12px;">Pet Shop</p>
             <p style="color: #757575; font-size: 12px;">Dirección: Av. Principal 123, Ciudad</p>

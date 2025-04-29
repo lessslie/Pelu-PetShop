@@ -42,12 +42,25 @@ export class PaymentController {
       throw new Error('Usuario no encontrado');
     }
 
+    // --- Mapeo robusto de serviceType y dogSize ---
+    let serviceType = 'bath';
+    if (turnoData.service_type && turnoData.service_type.toUpperCase() === 'BATH_AND_CUT') {
+      serviceType = 'bath and cut';
+    }
+    let dogSize = 'small';
+    if (turnoData.dog_size && turnoData.dog_size.toUpperCase() === 'MEDIUM') {
+      dogSize = 'medium';
+    } else if (turnoData.dog_size && turnoData.dog_size.toUpperCase() === 'LARGE') {
+      dogSize = 'large';
+    }
+    // ---------------------------------------------
+
     // Crear preferencia de pago
     const preference = await this.paymentService.createPaymentPreference(
       turnoId,
       turnoData.dog_name,
-      turnoData.service_type.toLowerCase() === 'BATH' ? 'bath' : 'bath and cut',
-      turnoData.dog_size.toLowerCase() === 'SMALL' ? 'small' : turnoData.dog_size.toLowerCase() === 'MEDIUM' ? 'medium' : 'large',
+      serviceType,
+      dogSize,
       turnoData.date,
       turnoData.time,
       userData.email,
@@ -92,7 +105,8 @@ export class PaymentController {
             data.time,
             data.dog_size.toLowerCase(),
             data.service_type.toLowerCase() === 'BATH' ? 'bath' : 'bath and cut',
-            paymentInfo.paymentId
+            paymentInfo.paymentId,
+            data.price
           );
         }
       }

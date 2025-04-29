@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsString, IsUUID, IsDateString, IsIn } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString, IsUUID, IsDateString, IsIn, IsNumber } from 'class-validator';
 
 export enum DogSize {
   SMALL = 'small',
@@ -39,4 +39,8 @@ export class CreateTurnoDto {
   @ApiProperty({ description: 'Tipo de servicio', enum: ServiceType })
   @IsEnum(ServiceType)
   serviceType: ServiceType;
+
+  @ApiProperty({ description: 'Precio del turno' })
+  @IsNumber()
+  price: number;
 }
