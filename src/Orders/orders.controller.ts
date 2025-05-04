@@ -19,8 +19,9 @@ export class OrdersController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('client', 'admin')
-  create(@Request() req, @Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(req.user.id, createOrderDto);
+  async create(@Request() req, @Body() createOrderDto: CreateOrderDto) {
+    // Ahora devuelve la URL de Mercado Pago
+    return await this.ordersService.create(req.user.id, createOrderDto);
   }
 
   // --- OBTENER TODAS LAS ORDENES (SOLO ADMIN) ---

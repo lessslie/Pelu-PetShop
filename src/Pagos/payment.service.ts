@@ -110,6 +110,45 @@ export class PaymentService {
   }
 
   /**
+   * Crea una preferencia de pago en Mercado Pago para productos del carrito
+   */
+  async createProductOrderPreference(orderId: string, items: { name: string, price: number, quantity: number, image?: string }[], userEmail: string) {
+    const frontendUrl = this.configService.get('FRONTEND_URL', 'http://localhost:3000');
+    const backendUrl = this.configService.get('BACKEND_URL', `${process.env.NEXT_PUBLIC_API_URL}`);
+    // Adaptar los items al formato de Mercado Pago
+    const mpItems = items.map((item, idx) => ({
+      id: `${orderId}-${idx}`,
+      title: item.name,
+      description: item.name,
+      quantity: item.quantity,
+      currency_id: 'ARS',
+      unit_price: item.price,
+      picture_url: item.image || undefined,
+    }));
+    const preferenceData = {
+      items: mpItems,
+      payer: {
+        email: userEmail,
+      },
+      back_urls: {
+        success: `${frontendUrl}/payment/success`,
+        failure: `${frontendUrl}/payment/failure`,
+        pending: `${frontendUrl}/payment/pending`,
+      },
+      auto_return: 'approved',
+      external_reference: orderId,
+      notification_url: `${backendUrl}/payment/webhook`,
+    };
+    try {
+      const response = await this.preference.create({ body: preferenceData });
+      return response;
+    } catch (err) {
+      console.error('Error al crear preferencia de pago para productos:', err);
+      throw new Error('Error al crear preferencia de pago para productos');
+    }
+  }
+
+  /**
    * Procesa el webhook de Mercado Pago
    * Si el pago es aprobado, actualiza el estado del turno a 'paid' en la base de datos
    */

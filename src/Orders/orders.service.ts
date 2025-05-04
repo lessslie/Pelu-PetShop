@@ -3,12 +3,16 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { CreateOrderDto, OrderItemDto } from './dto/create-order.dto';
 import { UpdateOrderDto, OrderStatus } from './dto/update-order.dto';
 import { ProductsService } from 'src/Products/products.service';
+import { PaymentService } from 'src/Pagos/payment.service';
+import { UsersService } from 'src/Users/users.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @Inject('SUPABASE_CLIENT') private supabaseClient: SupabaseClient,
     private productsService: ProductsService,
+    private paymentService: PaymentService,
+    private usersService: UsersService,
   ) {}
 
   async create(userId: string, createOrderDto: CreateOrderDto) {
@@ -62,7 +66,45 @@ export class OrdersService {
       throw new Error(`Error al crear items de la orden: ${itemsError.message}`);
     }
 
-    return this.findOne(order.id);
+    // Obtener email del usuario
+    const { data: userData, error: userError } = await this.supabaseClient
+      .from('users')
+      .select('email')
+      .eq('id', userId)
+      .single();
+    
+    if (userError || !userData) {
+      throw new Error('No se pudo obtener el email del usuario para Mercado Pago');
+    }
+
+    // Crear preferencia de pago en Mercado Pago
+    // Usar los productos reales para armar los items de Mercado Pago
+    const mpItems = items.map(item => ({
+      name: item.productId && item['productName'] ? item['productName'] : 'Producto',
+      price: item.price,
+      quantity: item.quantity,
+      image: item['image'] || undefined,
+    }));
+    // Si los productos no tienen 'productName', buscarlo desde la base de datos
+    for (let i = 0; i < items.length; i++) {
+      if (!mpItems[i].name || mpItems[i].name === 'Producto') {
+        // Buscar el producto en la base de datos
+        const product = await this.productsService.findOne(items[i].productId);
+        mpItems[i].name = product.name;
+        mpItems[i].image = product.image || undefined;
+      }
+    }
+    const mpResponse = await this.paymentService.createProductOrderPreference(
+      order.id,
+      mpItems,
+      userData.email
+    );
+
+    // Devolver info de la orden y la URL de pago
+    return {
+      order: await this.findOne(order.id),
+      mercadoPagoUrl: mpResponse.init_point,
+    };
   }
 
   async findAll(userId?: string) {
