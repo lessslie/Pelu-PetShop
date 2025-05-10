@@ -41,18 +41,17 @@ export class CreateProductDto {
   @IsEnum(ProductCategory)
   category: ProductCategory;
 
-  @ApiPropertyOptional({ example: 'https://ejemplo.com/imagen.jpg', description: 'URL de la imagen principal' })
+  @ApiPropertyOptional({ example: ['https://ejemplo.com/imagen.jpg','https://ejemplo.com/imagen2.jpg','https://ejemplo.com/imagen3.jpg'], description: 'URLs de las imágenes' })
+  @IsArray()
+  @IsUrl(undefined, { each: true })
+  @IsOptional()
+  imageUrl?: string[];
+
+  @ApiPropertyOptional({ example: 'https://ejemplo.com/video.mp4', description: 'URL del video' })
   @IsUrl()
   @IsOptional()
-  imageUrl?: string;
+  videoUrl?: string;
 
-  @ApiPropertyOptional({ 
-    type: [String],
-    example: ['https://ejemplo.com/imagen1.jpg', 'https://ejemplo.com/imagen2.jpg'], 
-    description: 'URLs de imágenes adicionales' 
-  })
-  @IsArray()
-  @IsOptional()
-  images?: string[];
+
   
 }

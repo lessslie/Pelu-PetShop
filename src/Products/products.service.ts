@@ -52,7 +52,20 @@ export class ProductsService {
   async update(id: string, updateProductDto: UpdateProductDto) {
     // Verificar que el producto existe
     await this.findOne(id);
-    
+
+    // Log para depuración
+    console.log('Valor recibido de videoUrl:', updateProductDto.videoUrl);
+
+    // Si videoUrl es string vacío, null, undefined o array vacío, lo convertimos a null
+    if (
+      (typeof updateProductDto.videoUrl === 'string' && updateProductDto.videoUrl.trim() === '') ||
+      updateProductDto.videoUrl === null ||
+      updateProductDto.videoUrl === undefined ||
+      (Array.isArray(updateProductDto.videoUrl) && updateProductDto.videoUrl.length === 0)
+    ) {
+      updateProductDto.videoUrl = null;
+    }
+
     const { data, error } = await this.supabaseClient
       .from('products')
       .update(updateProductDto)
