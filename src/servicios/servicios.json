@@ -1,12 +1,12 @@
 {
   "bano": {
-    "perro_grande": 50,
-    "perro_mediano": 50,
-    "perro_chico": 50
+    "perro_grande": 4000,
+    "perro_mediano": 3000,
+    "perro_chico": 2000
   },
   "bano_corte": {
-    "perro_grande": 100,
-    "perro_mediano": 100,
-    "perro_chico": 100
+    "perro_grande": 5100,
+    "perro_mediano": 4100,
+    "perro_chico": 3100
   }
 }

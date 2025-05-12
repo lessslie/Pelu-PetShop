@@ -65,6 +65,6 @@ async function bootstrap() {
   const port = process.env.PORT || 3001;
   await app.listen(port);
   console.log(`La aplicación está corriendo en: ${await app.getUrl()}`);
-  console.log(`La aplicación está corriendo en: ${process.env.NEXT_PUBLIC_API_URL}/api`);
+  console.log(`La aplicación está corriendo en: ${process.env.BACKEND_URL}/api`);
 }
 bootstrap();
